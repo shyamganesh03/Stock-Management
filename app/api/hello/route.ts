@@ -8,7 +8,6 @@
  *         description: Hello World!
  */
 
-// @ts-ignore
 export async function GET(_request: Request) {
   // Do whatever you want
   const requestMethod = _request.method
