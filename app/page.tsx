@@ -1,6 +1,36 @@
+'use client'
+
 import Image from 'next/image'
+import { useRouter } from 'next/navigation'
+import { useEffect } from 'react'
+import axios from 'axios'
 
 export default function Home() {
+  const router = useRouter()
+
+  const checkSession = async () => {
+    try {
+      const result = await axios.get('/api/auth/check-session', {
+        withCredentials: true,
+      })
+      if (result.data.isAuthenticated) {
+        router.push('/dashboard')
+      } else {
+        router.push('/sign-in')
+      }
+    } catch (error: any) {
+      console.error(
+        'Error checking session:',
+        error?.response?.data || error.message,
+      )
+    }
+  }
+
+  useEffect(() => {
+    ;(async () => {
+      await checkSession()
+    })()
+  }, [])
   return (
     <div className="grid min-h-screen grid-rows-[20px_1fr_20px] items-center justify-items-center gap-16 p-8 pb-20 font-[family-name:var(--font-geist-sans)] sm:p-20">
       <main className="row-start-2 flex flex-col items-center gap-8 sm:items-start">

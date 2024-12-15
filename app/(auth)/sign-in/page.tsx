@@ -1,5 +1,8 @@
-import React from 'react'
+'use client'
+
+import React, { useState } from 'react'
 import Image from 'next/image'
+import axios from 'axios'
 
 import BrandLogo from '@/lib/assets/brand-logo.svg'
 import { Label } from '@/components/ui/label'
@@ -14,6 +17,7 @@ import { Input } from '@/components/ui/input'
 import { PasswordInput } from '@/components/password-input'
 import { Button } from '@/components/ui/button'
 import { Icons } from '@/components/icons'
+import { useRouter } from 'next/navigation'
 
 function SignInScreen() {
   const features = [
@@ -30,6 +34,32 @@ function SignInScreen() {
       description: 'Manage your stock from anywhere, anytime.',
     },
   ]
+
+  const [loginDetails, setLoginDetails] = useState({
+    email: '',
+    password: '',
+  })
+  const router = useRouter()
+
+  const handleSignIn = async () => {
+    try {
+      const result = await axios.post(
+        `${window.location.origin}/api/auth/sign-in`,
+        {
+          email: loginDetails?.email,
+          password: loginDetails?.password,
+        },
+      )
+      if (result.data?.uid) {
+        router.push('/dashboard')
+      }
+    } catch (error: any) {
+      console.error(
+        'Error during sign-in:',
+        error?.response?.data || error.message,
+      )
+    }
+  }
 
   return (
     <div className="flex h-screen w-full flex-row bg-background">
@@ -84,15 +114,33 @@ function SignInScreen() {
             <Label htmlFor="user-name" className="text-md font-semibold">
               User Name
             </Label>
-            <Input id="user-name" placeholder="Enter your user Name" />
+            <Input
+              id="user-name"
+              placeholder="Enter your user Name"
+              onChange={(e) => {
+                setLoginDetails((prev) => ({
+                  ...prev,
+                  email: e.target?.value,
+                }))
+              }}
+            />
           </div>
           <div className="flex flex-col space-y-1.5">
             <Label htmlFor="password" className="text-md font-semibold">
               Password
             </Label>
-            <PasswordInput id="password" placeholder="Enter your password" />
+            <PasswordInput
+              id="password"
+              placeholder="Enter your password"
+              onChange={(e) => {
+                setLoginDetails((prev) => ({
+                  ...prev,
+                  password: e.target?.value,
+                }))
+              }}
+            />
           </div>
-          <Button>Sign In</Button>
+          <Button onClick={() => handleSignIn()}>Sign In</Button>
         </div>
         <div className="relative">
           <div className="absolute inset-0 flex items-center">
