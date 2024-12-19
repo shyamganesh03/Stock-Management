@@ -37,7 +37,7 @@
  */
 
 import { signInWithEmailAndPassword, getAuth } from 'firebase/auth'
-import firebase_app from '@/config/firebaseConfigData'
+import firebase_app from '@/config/firebase-config-data'
 import { createSession } from '@/lib/session'
 
 export async function POST(request: Request) {
