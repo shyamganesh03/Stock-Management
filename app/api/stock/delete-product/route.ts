@@ -17,10 +17,6 @@
  *                 type: string
  *                 description: The unique ID of the item to update.
  *                 example: "12345"
- *               [field]:
- *                 type: string
- *                 description: Any other fields to update in the item.
- *                 example: "value"
  *             required:
  *               - item_id
  *     responses:

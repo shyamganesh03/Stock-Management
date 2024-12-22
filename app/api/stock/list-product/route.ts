@@ -3,7 +3,7 @@
  * /api/stock/list-product:
  *   post:
  *     summary: Fetch items with pagination.
- *     description: Retrieve a paginated list of items from the database. The `limit` specifies the number of items to fetch, and the `startIndex` specifies the offset for pagination.
+ *     description: Retrieve a paginated list of items from the database. The `limit` specifies the number of items to fetch, and the `offset` specifies the offset for pagination.
  *     tags:
  *       - Stock
  *     requestBody:
@@ -17,7 +17,7 @@
  *                 type: integer
  *                 description: The number of items to retrieve. Defaults to 10.
  *                 example: 10
- *               startIndex:
+ *               offset:
  *                 type: integer
  *                 description: The starting index for pagination. Defaults to 0.
  *                 example: 0
@@ -48,9 +48,12 @@ export async function POST(_request: Request) {
 
     const { rows } =
       await sql`SELECT items.*, category.type, category.sub_type FROM items 
-                          INNER JOIN category ON items.category_id = category.id LIMIT ${requestBody?.limit || 10} OFFSET ${requestBody?.startIndex || 0};`
+                          INNER JOIN category ON items.category_id = category.id LIMIT ${requestBody?.limit || 10} OFFSET ${requestBody?.offset || 0};`
+    const { rows: totalRows } = await sql`SELECT COUNT(*) FROM items;`
 
-    return new Response(JSON.stringify({ items: rows }), {
+    const total = Number(totalRows[0].count)
+
+    return new Response(JSON.stringify({ items: rows, total: total }), {
       status: 200,
     })
   } catch (error) {

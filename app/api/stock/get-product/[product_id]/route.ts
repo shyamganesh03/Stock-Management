@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /api/stock/get-product/{stock_id}:
+ * /api/stock/get-product/{product_id}:
  *   get:
  *     summary: Fetch stock details by ID
  *     description: Retrieves detailed information about a specific stock item, including its category type and sub-type.
@@ -8,7 +8,7 @@
  *      - Stock
  *     parameters:
  *       - in: path
- *         name: stock_id
+ *         name: product_id
  *         required: true
  *         schema:
  *           type: string
@@ -56,7 +56,7 @@
  *                   example: false
  *                 message:
  *                   type: string
- *                   example: "Failed to fetch stock details of id: {stock_id}"
+ *                   example: "Failed to fetch stock details of id: {product_id}"
  *                 error:
  *                   type: object
  *                   description: The error details.
@@ -66,13 +66,13 @@ import { sql } from '@vercel/postgres'
 
 export async function GET(
   _request: Request,
-  { params }: { params: Promise<{ stock_id: string }> },
+  { params }: { params: Promise<{ product_id: string }> },
 ) {
-  const stock_id = (await params).stock_id
+  const product_id = (await params).product_id
   try {
     const { rows } =
       await sql`SELECT items.*, category.type, category.sub_type FROM items 
-                INNER JOIN category ON items.category_id = category.id where items.id = ${stock_id}`
+                INNER JOIN category ON items.category_id = category.id where items.id = ${product_id}`
 
     return new Response(
       JSON.stringify({
@@ -88,7 +88,7 @@ export async function GET(
     return new Response(
       JSON.stringify({
         success: false,
-        message: `Failed to fetch stock details of id: ${stock_id}`,
+        message: `Failed to fetch stock details of id: ${product_id}`,
         error,
       }),
       {
