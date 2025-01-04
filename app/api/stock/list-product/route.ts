@@ -40,7 +40,7 @@
  *         description: Internal server error.
  */
 
-import { sql } from '@vercel/postgres'
+import { QueryResultRow, sql } from '@vercel/postgres'
 
 export async function POST(_request: Request) {
   try {
@@ -53,8 +53,16 @@ export async function POST(_request: Request) {
 
     const total = Number(totalRows[0].count)
 
-    return new Response(JSON.stringify({ items: rows, total: total }), {
+    let finalData: QueryResultRow[] = []
+
+    rows.map((row: any) => {
+      let { type, sub_type, ...products } = row
+      finalData.push({ ...products, category: { type, sub_type } })
+    })
+
+    return new Response(JSON.stringify({ items: finalData, total }), {
       status: 200,
+      headers: { 'Content-Type': 'application/json' },
     })
   } catch (error) {
     return new Response(

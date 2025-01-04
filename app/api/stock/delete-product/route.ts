@@ -71,7 +71,7 @@ export async function POST(_request: Request) {
       )
     }
 
-    await sql`DELETE FROM items WHERE id = ${requestBody?.item_id}`
+    await sql`UPDATE TABLE items SET is_active = false WHERE id = ${requestBody?.item_id}`
 
     return new Response(
       JSON.stringify({

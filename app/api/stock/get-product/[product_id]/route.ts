@@ -62,7 +62,7 @@
  *                   description: The error details.
  */
 
-import { sql } from '@vercel/postgres'
+import { QueryResultRow, sql } from '@vercel/postgres'
 
 export async function GET(
   _request: Request,
@@ -74,10 +74,17 @@ export async function GET(
       await sql`SELECT items.*, category.type, category.sub_type FROM items 
                 INNER JOIN category ON items.category_id = category.id where items.id = ${product_id}`
 
+    let finalData: QueryResultRow[] = []
+
+    rows.map((row: any) => {
+      let { type, sub_type, ...products } = row
+      finalData.push({ ...products, category: { type, sub_type } })
+    })
+
     return new Response(
       JSON.stringify({
         success: true,
-        rows,
+        rows: finalData,
       }),
       {
         status: 200,
